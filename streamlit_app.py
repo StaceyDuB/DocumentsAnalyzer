@@ -18,12 +18,9 @@ from langchain.agents.agent_toolkits import (
     VectorStoreInfo
 )
 
-# Set APIkey for OpenAI Service
-# Can sub this out for other LLM providers
-os.environ['OPENAI_API_KEY'] = 'yourkey'
-
 # Create instance of OpenAI LLM
-llm = OpenAI(temperature=0.1, verbose=True)
+#llm = OpenAI(temperature=0.1, verbose=True)
+llm = OpenAI(model_name='text-davinci-003', openai_api_key=openai_api_key, temperature=0.1, verbose=True)
 embeddings = OpenAIEmbeddings()
 
 # Create and load PDF Loader
@@ -65,3 +62,11 @@ if prompt:
         search = store.similarity_search_with_score(prompt) 
         # Write out the first 
         st.write(search[0][0].page_content) 
+
+with st.form('myform'):
+  topic_text = st.text_input('Enter keyword:', '')
+  submitted = st.form_submit_button('Submit')
+  if not openai_api_key.startswith('sk-'):
+    st.warning('Please enter your OpenAI API key!', icon='⚠')
+  if submitted and openai_api_key.startswith('sk-'):
+    generate_response(topic_text)
